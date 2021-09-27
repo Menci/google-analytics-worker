@@ -1,4 +1,18 @@
-//const AllowedReferrer = 'skk.moe'; // ['skk.moe', 'suka.js.org'] multiple domains is supported in array format
+// AllowedReferrer: use worker var, a list of allowed domains, separated by '\n'
+
+let rAllowedReferrer;
+if (typeof AllowedReferrer === 'string' && AllowedReferrer) {
+  const _AllowedReferrer = AllowedReferrer.split('\n');
+
+  rAllowedReferrer = new RegExp(
+    _AllowedReferrer
+      .map(host => host.split('.').join('\\.'))
+      .map(host => `^(.+\\.|)${host}$`)
+      .join('|')
+  , 'g');
+}
+
+import cfgaJs from "inline:./dist/cfga.min.js";
 
 addEventListener('fetch', (event) => {
     event.respondWith(response(event));
@@ -51,15 +65,8 @@ async function response(event) {
 
     needBlock = (!ref_host || ref_host === '' || !user_agent || !url.search.includes('ga=UA-')) ? true : false;
 
-    if (typeof AllowedReferrer !== 'undefined' && AllowedReferrer !== null && AllowedReferrer) {
-      let _AllowedReferrer = AllowedReferrer;
-
-      if (!Array.isArray(AllowedReferrer)) _AllowedReferrer = [_AllowedReferrer];
-    
-      const rAllowedReferrer = new RegExp(_AllowedReferrer.join('|'), 'g');
-
-      needBlock = (!rAllowedReferrer.test(ref_host)) ? true : false;
-      console.log(_AllowedReferrer, rAllowedReferrer, ref_host);
+    if (rAllowedReferrer) {
+      needBlock = (!new RegExp(rAllowedReferrer).test(ref_host)) ? true : false;
     }
 
     if (needBlock) {
@@ -68,6 +75,16 @@ async function response(event) {
             status: 403,
             statusText: 'Forbidden'
         });
+    }
+
+    if (url.pathname.endsWith('.js')) {
+      return new Response(cfgaJs, {
+        headers: {
+          'Content-Type': 'text/javascript',
+          'Cache-Control': 'public, max-age=604800, s-maxage=43200'
+        },
+        status: 200,
+      })
     }
 
     const getCookie = (name) => {

@@ -1,14 +1,14 @@
 {
-  "name": "cfga",
+  "name": "google-analytics-worker",
   "version": "1.0.3",
   "description": "The Cloudflare Workers implementation of an async Google Analytics",
-  "main": "cfga.min.js",
+  "main": "dist/worker.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "terser cfga.js -o dist/cfga.min.js && node build.mjs"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SukkaW/cloudflare-workers-async-google-analytics.git"
+    "url": "git+https://github.com/Menci/google-analytics-worker.git"
   },
   "keywords": [
     "cloudflare",
@@ -18,7 +18,12 @@
   "author": "Sukka",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/SukkaW/cloudflare-workers-async-google-analytics/issues"
+    "url": "https://github.com/Menci/google-analytics-worker/issues"
   },
-  "homepage": "https://github.com/SukkaW/cloudflare-workers-async-google-analytics#readme"
+  "homepage": "https://github.com/Menci/google-analytics-worker#readme",
+  "dependencies": {
+    "esbuild": "^0.13.2",
+    "esbuild-plugin-inline-import": "^1.0.1",
+    "terser": "^5.9.0"
+  }
 }

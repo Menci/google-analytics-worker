@@ -5,7 +5,7 @@
         //min = Math.min,
         performance = window.performance,
         useNewPerformanceAPI = "getEntriesByType" in performance && "getEntriesByName" in performance,
-        t = useNewPerformanceAPI ? getEntriesByType("navigation")[0] : performance.timing,
+        t = useNewPerformanceAPI ? performance.getEntriesByType("navigation")[0] : performance.timing,
         startTime = useNewPerformanceAPI ? t.startTime : t.navigationStart,
         filterNumber = function (num) { return isNaN(num) || num == Infinity || num < 0 ? void 0 : num; },
         randomStr = function (num) { return Math.random().toString(36).slice(-num); },
