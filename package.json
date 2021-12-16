@@ -4,7 +4,7 @@
   "description": "The Cloudflare Workers implementation of an async Google Analytics",
   "main": "dist/worker.js",
   "scripts": {
-    "build": "terser cfga.js -o dist/cfga.min.js && node build.mjs"
+    "build": "mkdir -p dist && terser cfga.js -o dist/cfga.min.js && node build.mjs"
   },
   "repository": {
     "type": "git",
