@@ -1,22 +1,4 @@
-// AllowedReferrer: use worker var, a list of allowed domains, separated by '\n'
-
-let rAllowedReferrer;
-if (typeof AllowedReferrer === 'string' && AllowedReferrer) {
-  const _AllowedReferrer = AllowedReferrer.split('\n');
-
-  rAllowedReferrer = new RegExp(
-    _AllowedReferrer
-      .map(host => host.split('.').join('\\.'))
-      .map(host => `^(.+\\.|)${host}$`)
-      .join('|')
-  , 'g');
-}
-
 import cfgaJs from "inline:./dist/cfga.min.js";
-
-addEventListener('fetch', (event) => {
-    event.respondWith(response(event));
-});
 
 async function senData(event, url, uuid, user_agent, page_url) {
     const encode = (data) => encodeURIComponent(decodeURIComponent(data));
@@ -46,7 +28,7 @@ async function senData(event, url, uuid, user_agent, page_url) {
     await fetch(perfUrl, reqParameter);
 }
 
-async function response(event) {
+export async function handleEvent(event) {
     const url = new URL(event.request.url);
 
     const getReqHeader = (key) => event.request.headers.get(key);
@@ -63,11 +45,7 @@ async function response(event) {
 
     let needBlock = false;
 
-    needBlock = (!ref_host || ref_host === '' || !user_agent || !url.search.includes('ga=UA-')) ? true : false;
-
-    if (rAllowedReferrer) {
-      needBlock = (!new RegExp(rAllowedReferrer).test(ref_host)) ? true : false;
-    }
+    needBlock = (!ref_host || ref_host === '' || !user_agent) ? true : false;
 
     if (needBlock) {
         return new Response('403 Forbidden', {
